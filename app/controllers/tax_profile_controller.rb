@@ -5,7 +5,18 @@ class TaxProfileController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
-    render json: { status: 'SUCCESS', message: 'Test Message', data: 'Example Data' }, status: :ok
+    data = []
+    IncomeTaxProfile.all.each do |tax_profile|
+      data << {
+        "time_stamp": tax_profile[:updated_at].strftime("%d/%m/%Y %k:%M hrs"),
+        "employee_name": format_number(tax_profile[:employee_name]),
+        "annual_salary": format_number(tax_profile[:annual_salary]),
+        "monthly_income_tax": format_number(tax_profile[:monthly_income_tax])
+      }
+    end
+    
+
+    render json: { data: data}, status: :ok
   end
 
   def generate_payslip
@@ -38,13 +49,14 @@ class TaxProfileController < ApplicationController
     # Return the data back
     render json: {
       "employee_name": tax_profile.name,
-      "gross_monthly_income": number_with_precision(gross_monthly_income, precision: 2, separator: '.', delimiter: ','),
-      "monthly_income_tax": number_with_precision(monthly_income_tax, precision: 2, separator: '.', delimiter: ','),
-      "net_monthly_income": number_with_precision(net_monthly_income, precision: 2, separator: '.', delimiter: ',')
+      "gross_monthly_income": format_number(gross_monthly_income),
+      "monthly_income_tax": format_number(monthly_income_tax),
+      "net_monthly_income": format_number(net_monthly_income)
     }, status: :ok
   end
 
-  def compute_monthly_salary
-    
+  private
+  def format_number(number)
+    number_with_precision(number, precision: 2, separator: '.', delimiter: ',')
   end
 end
