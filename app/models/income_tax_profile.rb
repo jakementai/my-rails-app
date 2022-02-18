@@ -1,0 +1,2 @@
+class IncomeTaxProfile < ApplicationRecord
+end
