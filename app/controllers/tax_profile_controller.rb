@@ -1,4 +1,4 @@
-require_relative '../../income_tax'
+require_relative "../../income_tax"
 
 class TaxProfileController < ApplicationController
   # include ActionView::Helpers::NumberHelper
@@ -11,7 +11,7 @@ class TaxProfileController < ApplicationController
         "time_stamp": tax_profile[:updated_at].strftime("%d/%m/%Y %k:%M hrs"),
         "employee_name": format_number(tax_profile[:employee_name]),
         "annual_salary": format_number(tax_profile[:annual_salary]),
-        "monthly_income_tax": format_number(tax_profile[:monthly_income_tax])
+        "monthly_income_tax": format_number(tax_profile[:monthly_income_tax]),
       }
     end
     render json: { data: data }, status: :ok
@@ -29,7 +29,7 @@ class TaxProfileController < ApplicationController
     IncomeTaxProfile.create(
       employee_name: params[:employee_name],
       annual_salary: params[:gross_income],
-      monthly_income_tax: tax_profile.monthly_income_tax
+      monthly_income_tax: tax_profile.monthly_income_tax,
     )
 
     # Return the data back
@@ -37,7 +37,7 @@ class TaxProfileController < ApplicationController
       "employee_name": tax_profile.name,
       "gross_monthly_income": format_number(tax_profile.gross_monthly_income),
       "monthly_income_tax": format_number(tax_profile.monthly_income_tax),
-      "net_monthly_income": format_number(tax_profile.net_monthly_income)
+      "net_monthly_income": format_number(tax_profile.net_monthly_income),
     }, status: :ok
   end
 
@@ -46,5 +46,4 @@ class TaxProfileController < ApplicationController
   def format_number(number)
     helpers.number_with_precision(number, precision: 2, separator: ".", delimiter: ",")
   end
-
 end

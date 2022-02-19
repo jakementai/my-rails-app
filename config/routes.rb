@@ -3,4 +3,11 @@ Rails.application.routes.draw do
   get "/index", to: "tax_profile#index"
   post "/payslip", to: "tax_profile#generate_payslip"
   post "/monthly_salary", to: "tax_profile#compute_monthly_salary"
+
+  namespace :api do
+    namespace :v1 do
+      get "/index", to: "tax_profile#index"
+    end
+  end
+
 end

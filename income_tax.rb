@@ -13,21 +13,30 @@ class IncomeTax
   def annual_income_tax
     if @annual_income_tax.nil?
       @annual_income_tax = calculate_annual_tax
-    else 
+    else
       @annual_income_tax
     end
   end
 
   def monthly_income_tax
-    annual_income_tax / 12
+    annual_income_tax / 12.0
   end
 
   def net_monthly_income
-    (@annual_gross_salary - annual_income_tax) / 12
+    (@annual_gross_salary - annual_income_tax) / 12.0
   end
 
   def gross_monthly_income
-    annual_gross_salary / 12
+    annual_gross_salary / 12.0
+  end
+
+  def tax_breakdown
+    if @tax_breakdown.nil?
+      calculate_annual_tax
+      @tax_breakdown
+    else
+      @tax_breakdown
+    end
   end
 
   private
@@ -36,6 +45,7 @@ class IncomeTax
     # Variables
     remaining_salary = @annual_gross_salary
     total_tax = 0
+    @tax_breakdown = []
     # foreach loop to calculate total income tax
     @tax_bracket.each do |bracket|
       taxible_income = remaining_salary - bracket[1].to_i
@@ -43,6 +53,7 @@ class IncomeTax
       if taxible_income.positive?
         total_tax += taxible_income * tax_rate
         remaining_salary -= taxible_income
+        @tax_breakdown << [tax_rate, taxible_income * tax_rate]
       end
     end
     total_tax
