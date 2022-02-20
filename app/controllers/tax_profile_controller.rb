@@ -5,25 +5,24 @@ class TaxProfileController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
+    logger.debug "TESTESTESTSETSETSTE"
     data = []
     IncomeTaxProfile.all.each do |tax_profile|
-      data << {
-        "time_stamp": tax_profile[:updated_at].strftime("%d/%m/%Y %k:%M hrs"),
-        "employee_name": format_number(tax_profile[:employee_name]),
-        "annual_salary": format_number(tax_profile[:annual_salary]),
-        "monthly_income_tax": format_number(tax_profile[:monthly_income_tax]),
-      }
+      data << tax_profile.to_json
     end
     render json: { data: data }, status: :ok
   end
 
   def generate_payslip
+
     # Calculate the payslip
     if !params[:tax_bracket].nil?
       tax_profile = IncomeTax.new(params[:employee_name], params[:gross_income].to_i, params[:tax_bracket])
     else
       tax_profile = IncomeTax.new(params[:employee_name], params[:gross_income].to_i)
     end
+
+    debugger
 
     # Insert into DB
     IncomeTaxProfile.create(

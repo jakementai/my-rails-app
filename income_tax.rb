@@ -60,6 +60,9 @@ class IncomeTax
   end
 
   def parse_tax_bracket(tax_bracket)
+    puts "tax_bracket before: #{tax_bracket}"
+    tax_bracket = tax_bracket.gsub(/[\[\]]/, "")
+    puts tax_bracket
     custom_tax_bracket = []
     # Parse the Arguments
     tax_bracket.split(",").each do |args|

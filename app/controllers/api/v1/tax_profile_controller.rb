@@ -6,47 +6,42 @@ module Api::V1
     skip_before_action :verify_authenticity_token
 
     def index
-      data = []
+      @income_tax_profiles = []
+      @count = 1
       IncomeTaxProfile.all.each do |tax_profile|
-        data << {
-          "API Version": "V1",
-          "time_stamp": tax_profile[:updated_at].strftime("%d/%m/%Y %k:%M hrs"),
-          "employee_name": format_number(tax_profile[:employee_name]),
-          "annual_salary": format_number(tax_profile[:annual_salary]),
-          "monthly_income_tax": format_number(tax_profile[:monthly_income_tax]),
-        }
+        @income_tax_profiles << tax_profile.to_json
       end
-      render json: { data: data }, status: :ok
+      # render "index"
+    end
+
+    def show
+      @tax_profile = (IncomeTaxProfile.find(params[:id])).to_json
+    end
+
+    def delete_record
+      IncomeTaxProfile.destroy(params[:id])
+      redirect_to api_v1_index_path
     end
 
     def generate_payslip
+      tax_profile_param = params[:tax_profile]
       # Calculate the payslip
-      if !params[:tax_bracket].nil?
-        tax_profile = IncomeTax.new(params[:employee_name], params[:gross_income].to_i, params[:tax_bracket])
+      if !tax_profile_param[:tax_bracket].empty?
+        tax_profile = IncomeTax.new(tax_profile_param[:employee_name], tax_profile_param[:gross_annual_income].to_i, tax_profile_param[:tax_bracket], true)
       else
-        tax_profile = IncomeTax.new(params[:employee_name], params[:gross_income].to_i)
+        tax_profile = IncomeTax.new(tax_profile_param[:employee_name], tax_profile_param[:gross_annual_income].to_i)
       end
 
       # Insert into DB
-      IncomeTaxProfile.create(
-        employee_name: params[:employee_name],
-        annual_salary: params[:gross_income],
+      new_profile = IncomeTaxProfile.create(
+        employee_name: tax_profile_param[:employee_name],
+        annual_salary: tax_profile_param[:gross_annual_income],
         monthly_income_tax: tax_profile.monthly_income_tax,
+        tax_bracket: tax_profile.tax_bracket,
       )
 
       # Return the data back
-      render json: {
-               "employee_name": tax_profile.name,
-               "gross_monthly_income": format_number(tax_profile.gross_monthly_income),
-               "monthly_income_tax": format_number(tax_profile.monthly_income_tax),
-               "net_monthly_income": format_number(tax_profile.net_monthly_income),
-             }, status: :ok
-    end
-
-    private
-
-    def format_number(number)
-      helpers.number_with_precision(number, precision: 2, separator: ".", delimiter: ",")
+      redirect_to api_v1_path(new_profile.id)
     end
   end
 end
