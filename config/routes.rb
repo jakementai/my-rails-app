@@ -6,11 +6,14 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      get "/index", to: "tax_profile#index"
-      get "/show/:id", to: "tax_profile#show"
-      delete "/show/:id", to: "tax_profile#delete_record"
-      get "/new", to: "tax_profile#new"
+      get "/payslip", to: "tax_profile#index"
+      get "/payslip-form", to: "tax_profile#new"
+      get "/csv", to: "tax_profile#generate_csv", defaults: { format: :csv }
+      get "/payslip/:id", to: "tax_profile#show"
+      delete "/payslip/:id", to: "tax_profile#delete_record"
       post "/payslip", to: "tax_profile#generate_payslip"
     end
   end
+
+  root to: "api/v1/tax_profile#index"
 end

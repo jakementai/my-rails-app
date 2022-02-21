@@ -1,4 +1,5 @@
 require_relative "../../../../income_tax"
+require "csv"
 
 module Api::V1
   class TaxProfileController < ApplicationController
@@ -8,19 +9,40 @@ module Api::V1
     def index
       @income_tax_profiles = []
       @count = 1
-      IncomeTaxProfile.all.each do |tax_profile|
-        @income_tax_profiles << tax_profile.to_json
+      @income_tax_profiles = IncomeTaxProfile.all.map(&:to_json)
+
+      respond_to do |format|
+        format.html
+        format.json { render json: @income_tax_profiles, status: :ok }
       end
-      # render "index"
+    end
+
+    def generate_csv
+      @tax_profiles = IncomeTaxProfile.all
+
+      respond_to do |format|
+        format.csv do
+          response.headers["Content-Type"] = "text/csv"
+          response.headers["Content-Disposition"] = "attachment; filename=employee_payroll.csv"
+          render template: "api/v1/tax_profile/export.csv.erb"
+        end
+      end
     end
 
     def show
       @tax_profile = (IncomeTaxProfile.find(params[:id])).to_json
+      respond_to do |format|
+        format.html
+        format.json { render json: @tax_profile, status: :ok }
+      end
     end
 
     def delete_record
       IncomeTaxProfile.destroy(params[:id])
-      redirect_to api_v1_index_path
+      respond_to do |format|
+        format.html { redirect_to api_v1_payslip_path }
+        format.json { render json: { message: "Deleted Successfully" }, status: :ok }
+      end
     end
 
     def generate_payslip
@@ -41,7 +63,17 @@ module Api::V1
       )
 
       # Return the data back
-      redirect_to api_v1_path(new_profile.id)
+      if new_profile.errors.empty?
+        respond_to do |format|
+          format.html { redirect_to api_v1_path(new_profile.id) }
+          format.json { render json: new_profile.to_json, status: :ok }
+        end
+      else
+        respond_to do |format|
+          format.html { redirect_to api_v1_new_path, errors: new_profile.errors }
+          format.json { render json: { message: "Created Unsucessfully" } }
+        end
+      end
     end
   end
 end

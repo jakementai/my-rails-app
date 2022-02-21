@@ -66,7 +66,7 @@ class IncomeTax
     custom_tax_bracket = []
     # Parse the Arguments
     tax_bracket.split(",").each do |args|
-      custom_tax_bracket += [args.split(":")]
+      custom_tax_bracket += [args.split(":").map(&:to_i)]
     end
     custom_tax_bracket
   end
