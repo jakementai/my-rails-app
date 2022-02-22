@@ -7,7 +7,6 @@ module Api::V1
     skip_before_action :verify_authenticity_token
 
     def index
-      @income_tax_profiles = []
       @count = 1
       @income_tax_profiles = IncomeTaxProfile.all.map(&:to_json)
 
@@ -41,14 +40,14 @@ module Api::V1
       IncomeTaxProfile.destroy(params[:id])
       respond_to do |format|
         format.html { redirect_to api_v1_payslip_path }
-        format.json { render json: { message: "Deleted Successfully" }, status: :ok }
+        format.json { render json: { message: "Deleted Successfully" }, status: :accepted }
       end
     end
 
     def generate_payslip
       tax_profile_param = params[:tax_profile]
       # Calculate the payslip
-      if !tax_profile_param[:tax_bracket].empty?
+      unless tax_profile_param[:tax_bracket].empty?
         tax_profile = IncomeTax.new(tax_profile_param[:employee_name], tax_profile_param[:gross_annual_income].to_i, tax_profile_param[:tax_bracket], true)
       else
         tax_profile = IncomeTax.new(tax_profile_param[:employee_name], tax_profile_param[:gross_annual_income].to_i)
@@ -70,7 +69,7 @@ module Api::V1
         end
       else
         respond_to do |format|
-          format.html { redirect_to api_v1_new_path, errors: new_profile.errors }
+          format.html { redirect_to api_v1_payslip_path, errors: new_profile.errors }
           format.json { render json: { message: "Created Unsucessfully" } }
         end
       end

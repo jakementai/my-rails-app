@@ -5,7 +5,6 @@ class TaxProfileController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
-    logger.debug "TESTESTESTSETSETSTE"
     data = []
     IncomeTaxProfile.all.each do |tax_profile|
       data << tax_profile.to_json
@@ -21,8 +20,6 @@ class TaxProfileController < ApplicationController
     else
       tax_profile = IncomeTax.new(params[:employee_name], params[:gross_income].to_i)
     end
-
-    debugger
 
     # Insert into DB
     IncomeTaxProfile.create(

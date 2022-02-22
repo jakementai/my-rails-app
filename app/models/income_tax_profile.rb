@@ -29,18 +29,22 @@ class IncomeTaxProfile < ApplicationRecord
   end
 
   def to_json
-    {
-      "id": attributes["id"],
-      "employee_name": attributes["employee_name"],
-      "updated_at": attributes["updated_at"].strftime("%d/%m/%Y %I:%M %p"),
-      "gross_annual_salary": format_number(attributes["annual_salary"]),
-      "annual_income_tax": annual_income_tax,
-      "net_annual_salary": net_annual_salary,
-      "gross_monthly_salary": gross_monthly_salary,
-      "monthly_income_tax": format_number(attributes["monthly_income_tax"]),
-      "net_monthly_salary": net_monthly_salary,
-      "tax_bracket": tax_bracket,
-    }
+    if attributes.empty?
+      {}
+    else
+      {
+        "id": attributes["id"],
+        "employee_name": attributes["employee_name"],
+        "updated_at": attributes["updated_at"].strftime("%d/%m/%Y %I:%M %p"),
+        "gross_annual_salary": format_number(attributes["annual_salary"]),
+        "annual_income_tax": annual_income_tax,
+        "net_annual_salary": net_annual_salary,
+        "gross_monthly_salary": gross_monthly_salary,
+        "monthly_income_tax": format_number(attributes["monthly_income_tax"]),
+        "net_monthly_salary": net_monthly_salary,
+        "tax_bracket": tax_bracket,
+      }
+    end
   end
 
   private
