@@ -41,7 +41,7 @@ yarn-debug.log*
 
 # Users Customer Ignore
 *solargraph.yml
-rails.rb
+definitions.rb
 
 # Recomended Igonore by Git People
 *.rbc
