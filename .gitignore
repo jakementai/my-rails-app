@@ -42,7 +42,7 @@ yarn-debug.log*
 # Users Customer Ignore
 *solargraph.yml
 definitions.rb
-
+.rubocop.yml
 # Recomended Igonore by Git People
 *.rbc
 capybara-*.html
